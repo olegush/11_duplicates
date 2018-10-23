@@ -10,7 +10,7 @@ Example of script launch on Linux, Python 3.5:
 
 ```bash
 
-$ python duplicates.py <filepath>
+$ python duplicates.py <root directory>
 
 Founded duplicates:
 index.html (5013 bytes) in tipped
