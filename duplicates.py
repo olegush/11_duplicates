@@ -5,14 +5,11 @@ from collections import defaultdict
 
 
 def get_duplicates(rootdirpath):
-    fileslist = defaultdict(dict)
-    for path, dirs, files in os.walk(rootdirpath):
-        for filename in files:
+    fileslist = defaultdict(list)
+    for path, dirs, filenames in os.walk(rootdirpath):
+        for filename in filenames:
             filesize = str(getsize(os.path.join(path, filename)))
-            paths = [path]
-            if fileslist.get((filename, filesize)) is not None:
-                paths = fileslist.get((filename, filesize)) + [path]
-            fileslist[(filename, filesize)] = paths
+            fileslist[(filename, filesize)].append(path)
     filtered_dict = {
         filenamesize: paths for filenamesize, paths
         in fileslist.items() if len(paths) > 1
@@ -23,14 +20,19 @@ def get_duplicates(rootdirpath):
 if __name__ == '__main__':
     try:
         user_dirpath = sys.argv[1]
+    except IndexError:
+        print('No script parameter (path to directory)')
+    else:
         if os.path.isdir(user_dirpath):
-            print('Founded duplicates:')
             duplicates_list = get_duplicates(user_dirpath).items()
-            for fileinfo, filepath in duplicates_list:
+            print('{}'.format('Founded duplicates:'
+                              if len(duplicates_list) > 0
+                              else 'No duplicates'
+                              )
+                  )
+            for (filename, filesize), filepaths in duplicates_list:
                 print('{} ({} bytes) in {}'
-                      .format(fileinfo[0], fileinfo[1], filepath)
+                      .format(filename, filesize, filepaths)
                       )
         else:
             print('No such directory')
-    except IndexError:
-        print('No script parameter (path to directory)')
